@@ -69,7 +69,7 @@ gp.compute(t)
 min_timescale = np.log(1.)#np.log(np.min(np.abs(np.diff(t)))/2.)
 max_timescale = np.log(20.)#np.log(1e3)
 
-print 'Setting maximum and minimum timescales of period to:',np.exp(min_timescale),np.exp(max_timescale)
+print('Setting maximum and minimum timescales of period to:',np.exp(min_timescale),np.exp(max_timescale))
 # Now define MultiNest priors and log-likelihood:
 def prior(cube, ndim, nparams):
     # Prior on "median flux" is uniform:
@@ -98,7 +98,7 @@ def loglike(cube, ndim, nparams):
 n_params = 6
 out_file = 'out_multinest_trend_'
 fout = fname.split('.')[0]
-print fout
+print(fout)
 if not os.path.exists(fout):
     os.mkdir(fout)
 
@@ -134,34 +134,33 @@ else:
 #print posterior_samples.shape
 # Extract posterior parameter vector:
 theta = np.median(posterior_samples,axis=0)
-print 'Theta:',theta
 one_array = np.ones(len(t))
 ferr = one_array*np.exp(theta[-1])
 gp.set_parameter_vector(theta[1:])
 
 # Get prediction from GP:
 x = np.linspace(np.min(t)-0.1, np.max(t)+0.1, 5000)
-print 'Getting prediction...'
+print('Getting prediction...')
 pred_mean, pred_var = gp.predict((f-theta[0]), x, return_var=True)
 pred_std = np.sqrt(pred_var)
 
-print 'Detrending...'
+print('Detrending...')
 # Detrend extra light curve using the best-fit parameters, if given:
 if ofname != '':
     opred_mean, opred_var = gp.predict((f-theta[0]), tt, return_var=True)
-    print 'f-theta:',f[:10]-theta[0]
-    print 'opred_mean:',opred_mean[:10]
+    print('f-theta:',f[:10]-theta[0])
+    print('opred_mean:',opred_mean[:10])
     opred_std = np.sqrt(opred_var)
-    print 'ff:',ff[:10]
+    print('ff:',ff[:10])
     ff = ff/(opred_mean+theta[0])
-    print 'ff/opred+theta',ff[:10]
+    print('ff/opred+theta',ff[:10])
     ff_err = np.sqrt(opred_var + np.median(ferr)**2)
     det_lc = open(fout+'/det_lc.dat','w')
     for i in range(len(tt)):
         det_lc.write('{0:.10f} {1:.10f} {2:.10f}\n'.format(tt[i],ff[i],np.median(np.exp(out['posterior_samples']['logjitter']))))
     det_lc.close()
 
-print 'Plotting...'
+print('Plotting...')
 # Plot:
 sns.set_context("talk")
 sns.set_style("ticks")
