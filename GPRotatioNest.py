@@ -66,8 +66,8 @@ kernel_jitter = terms.JitterTerm(np.log(100*1e-6))
 kernel = rot_kernel + kernel_jitter
 gp = celerite.GP(kernel, mean=0.0)
 gp.compute(t)
-min_timescale = np.log(1.)#np.log(np.min(np.abs(np.diff(t)))/2.)
-max_timescale = np.log(20.)#np.log(1e3)
+min_timescale = np.log(np.min(np.abs(np.diff(t)))/2.)
+max_timescale = np.log(np.max(t))
 
 print('Setting maximum and minimum timescales of period to:',np.exp(min_timescale),np.exp(max_timescale))
 # Now define MultiNest priors and log-likelihood:
